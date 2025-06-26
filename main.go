@@ -21,6 +21,19 @@ const (
 
 const sections = 4
 
+/* STYLING */
+const padLeftRight = 3
+const padTopBottom = 1
+
+var (
+	columnStyle   = lipgloss.NewStyle().Padding(padTopBottom, padLeftRight)
+	selectedStyle = lipgloss.NewStyle().Padding(padTopBottom, padLeftRight).
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("62"))
+	helpStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("241"))
+)
+
 /*
 Task would implement `list` with Title, Description, FilterValue
 */
@@ -46,6 +59,7 @@ type Model struct {
 	selected Status
 	lists    []list.Model
 	loaded   bool
+	exiting  bool
 	err      error
 }
 
@@ -55,17 +69,17 @@ func New() *Model {
 
 func initList(title string, status Status, width, height int) list.Model {
 	var lst = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
+	lst.SetShowHelp(false)
 	lst.Title = title
 	lst.SetItems([]list.Item{
 		Task{status: status, title: fmt.Sprintf("%s this", title), description: "this is this"},
-		Task{status: status, title: fmt.Sprintf("%s that", title), description: "this is that"},
-		Task{status: status, title: fmt.Sprintf("%s what", title), description: "this is what"},
+		Task{status: status, title: fmt.Sprintf("%s h:%d", title, height), description: "this is that"},
+		Task{status: status, title: fmt.Sprintf("%s w:%d", title, width), description: "this is what"},
 	})
 	return lst
 }
 
 func (m *Model) initLists(width, height int) {
-	width = width / sections
 	var todo = initList("ToDo", todo, width, height)
 	var wip = initList("W.I.P.", wip, width, height)
 	var done = initList("Done", done, width, height)
@@ -84,8 +98,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		if !m.loaded {
-			m.initLists(msg.Width, msg.Height)
+			width := msg.Width / sections
+			height := msg.Height - int(msg.Height/10)
+			m.initLists(width, height)
 			m.loaded = true
+		}
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "left", "h":
+			m.PrevList()
+		case "right", "j":
+			m.NextList()
+		case "ctrl+c", "q":
+			m.exiting = true
+			return m, tea.Quit
 		}
 	}
 	var cmd tea.Cmd
@@ -93,14 +119,47 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
+func (m Model) columnView(status Status) string {
+	if m.selected == status {
+		return selectedStyle.Render(m.lists[status].View())
+	}
+	return columnStyle.Render(m.lists[status].View())
+}
+
 func (m Model) View() string {
+	if m.exiting {
+		return "[TBD] clean exit with persist state"
+	}
 	if !m.loaded {
 		return "loading..."
 	}
-	return lipgloss.JoinHorizontal(lipgloss.Left,
-		m.lists[todo].View(),
-		m.lists[wip].View(),
-		m.lists[done].View())
+	var (
+		todoView = m.columnView(todo)
+		wipView  = m.columnView(wip)
+		doneView = m.columnView(done)
+	)
+	return lipgloss.JoinHorizontal(
+		lipgloss.Left,
+		todoView,
+		wipView,
+		doneView,
+	)
+}
+
+func (m *Model) NextList() {
+	if m.selected == done {
+		m.selected = todo
+	} else {
+		m.selected++
+	}
+}
+
+func (m *Model) PrevList() {
+	if m.selected == todo {
+		m.selected = done
+	} else {
+		m.selected--
+	}
 }
 
 func main() {
