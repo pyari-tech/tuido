@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"log"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -17,6 +17,7 @@ const (
 	done
 	blocked
 	abandon
+	archive
 )
 
 const sections = 4
@@ -72,9 +73,9 @@ func initList(title string, status Status, width, height int) list.Model {
 	lst.SetShowHelp(false)
 	lst.Title = title
 	lst.SetItems([]list.Item{
-		Task{status: status, title: fmt.Sprintf("%s this", title), description: "this is this"},
-		Task{status: status, title: fmt.Sprintf("%s h:%d", title, height), description: "this is that"},
-		Task{status: status, title: fmt.Sprintf("%s w:%d", title, width), description: "this is what"},
+		Task{status: status, title: fmt.Sprintf("%s-1", title), description: "#1"},
+		Task{status: status, title: fmt.Sprintf("%s-2", title), description: "#2"},
+		Task{status: status, title: fmt.Sprintf("%s-3", title), description: "#3"},
 	})
 	return lst
 }
@@ -109,6 +110,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.PrevList()
 		case "right", "j":
 			m.NextList()
+		case ">", "k":
+			return m, m.MoveTaskToNext()
+		case "<", "l":
+			return m, m.MoveTaskToPrev()
 		case "ctrl+c", "q":
 			m.exiting = true
 			return m, tea.Quit
@@ -133,6 +138,7 @@ func (m Model) View() string {
 	if !m.loaded {
 		return "loading..."
 	}
+
 	var (
 		todoView = m.columnView(todo)
 		wipView  = m.columnView(wip)
@@ -162,12 +168,50 @@ func (m *Model) PrevList() {
 	}
 }
 
+func (m *Model) changeTaskStatus(targetStatus Status) {
+	selectedItem := m.lists[m.selected].SelectedItem()
+	selectedTask, ok := selectedItem.(Task)
+	if !ok {
+		return
+	}
+	selectedItemIndex := m.lists[m.selected].Index()
+	m.lists[selectedTask.status].RemoveItem(selectedItemIndex)
+	if m.selected > targetStatus {
+		m.PrevList()
+	} else {
+		m.NextList()
+	}
+	selectedTask.status = m.selected
+	selectedItemTargetIndex := len(m.lists[m.selected].Items()) + 1
+	m.lists[m.selected].InsertItem(selectedItemTargetIndex, selectedTask)
+}
+
+func (m *Model) MoveTaskToNext() tea.Cmd {
+	if m.selected == done {
+		return nil
+	} else if len(m.lists[m.selected].Items()) == 0 {
+		return nil
+	}
+
+	m.changeTaskStatus(m.selected + 1)
+	return nil
+}
+
+func (m *Model) MoveTaskToPrev() tea.Cmd {
+	if m.selected == todo {
+		return nil
+	} else if len(m.lists[m.selected].Items()) == 0 {
+		return nil
+	}
+
+	m.changeTaskStatus(m.selected - 1)
+	return nil
+}
+
 func main() {
 	m := New()
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if err := p.Start(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Panic("Failed to start:", err.Error())
 	}
-	fmt.Println("done.")
 }
