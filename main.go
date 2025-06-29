@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	m := tasksets.NewModel()
+	m := tasksets.NewHome()
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if err := p.Start(); err != nil {
 		log.Panic("Failed to start:", err.Error())

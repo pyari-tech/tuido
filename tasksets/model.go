@@ -23,8 +23,18 @@ var (
 			Foreground(lipgloss.Color("241"))
 )
 
-/* Struct */
-type Model struct {
+/* Tea Model */
+type PageType int8
+
+var Pages []tea.Model
+
+const (
+	homePage PageType = iota
+	addTaskPage
+)
+
+/* Struct Home for homePage's Model */
+type Home struct {
 	selected Status
 	lists    []list.Model
 	loaded   bool
@@ -32,8 +42,8 @@ type Model struct {
 	err      error
 }
 
-func NewModel() *Model {
-	return &Model{}
+func NewHome() *Home {
+	return &Home{}
 }
 
 func initList(title string, status Status, width, height int) list.Model {
@@ -48,70 +58,73 @@ func initList(title string, status Status, width, height int) list.Model {
 	return lst
 }
 
-func (m *Model) initLists(width, height int) {
+func (h *Home) initLists(width, height int) {
 	var todo = initList("ToDo", todo, width, height)
 	var wip = initList("W.I.P.", wip, width, height)
 	var done = initList("Done", done, width, height)
-	m.lists = []list.Model{
+	h.lists = []list.Model{
 		todo,
 		wip,
 		done,
 	}
-	m.lists[0].SetShowStatusBar(true)
+	h.lists[0].SetShowStatusBar(true)
 }
 
-func (m Model) Init() tea.Cmd {
+func (h Home) Init() tea.Cmd {
 	return nil
 }
 
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		if !m.loaded {
+		if !h.loaded {
 			width := msg.Width / sections
 			height := msg.Height - int(msg.Height/10)
-			m.initLists(width, height)
-			m.loaded = true
+			h.initLists(width, height)
+			h.loaded = true
 		}
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "left", "h":
-			m.PrevList()
+			h.PrevList()
 		case "right", "j":
-			m.NextList()
+			h.NextList()
 		case ">", "k":
-			return m, m.MoveTaskToNext()
+			return h, h.MoveTaskToNext()
 		case "<", "l":
-			return m, m.MoveTaskToPrev()
+			return h, h.MoveTaskToPrev()
+		case "+", "n":
+			Pages[homePage] = h
+			return Pages[addTaskPage].Update(nil)
 		case "ctrl+c", "q":
-			m.exiting = true
-			return m, tea.Quit
+			h.exiting = true
+			return h, tea.Quit
 		}
 	}
 	var cmd tea.Cmd
-	m.lists[m.selected], cmd = m.lists[m.selected].Update(msg)
-	return m, cmd
+	h.lists[h.selected], cmd = h.lists[h.selected].Update(msg)
+	return h, cmd
 }
 
-func (m Model) columnView(status Status) string {
-	if m.selected == status {
-		return selectedStyle.Render(m.lists[status].View())
+func (h Home) columnView(status Status) string {
+	if h.selected == status {
+		return selectedStyle.Render(h.lists[status].View())
 	}
-	return columnStyle.Render(m.lists[status].View())
+	return columnStyle.Render(h.lists[status].View())
 }
 
-func (m Model) View() string {
-	if m.exiting {
+func (h Home) View() string {
+	if h.exiting {
 		return "[TBD] clean exit with persist state"
 	}
-	if !m.loaded {
+	if !h.loaded {
 		return "loading..."
 	}
 
 	var (
-		todoView = m.columnView(todo)
-		wipView  = m.columnView(wip)
-		doneView = m.columnView(done)
+		todoView = h.columnView(todo)
+		wipView  = h.columnView(wip)
+		doneView = h.columnView(done)
 	)
 	return lipgloss.JoinHorizontal(
 		lipgloss.Left,
@@ -121,58 +134,58 @@ func (m Model) View() string {
 	)
 }
 
-func (m *Model) NextList() {
-	if m.selected == done {
-		m.selected = todo
+func (h *Home) NextList() {
+	if h.selected == done {
+		h.selected = todo
 	} else {
-		m.selected++
+		h.selected++
 	}
 }
 
-func (m *Model) PrevList() {
-	if m.selected == todo {
-		m.selected = done
+func (h *Home) PrevList() {
+	if h.selected == todo {
+		h.selected = done
 	} else {
-		m.selected--
+		h.selected--
 	}
 }
 
-func (m *Model) changeTaskStatus(targetStatus Status) {
-	selectedItem := m.lists[m.selected].SelectedItem()
+func (h *Home) changeTaskStatus(targetStatus Status) {
+	selectedItem := h.lists[h.selected].SelectedItem()
 	selectedTask, ok := selectedItem.(Task)
 	if !ok {
 		return
 	}
-	selectedItemIndex := m.lists[m.selected].Index()
-	m.lists[selectedTask.status].RemoveItem(selectedItemIndex)
-	if m.selected > targetStatus {
-		m.PrevList()
+	selectedItemIndex := h.lists[h.selected].Index()
+	h.lists[selectedTask.status].RemoveItem(selectedItemIndex)
+	if h.selected > targetStatus {
+		h.PrevList()
 	} else {
-		m.NextList()
+		h.NextList()
 	}
-	selectedTask.status = m.selected
-	selectedItemTargetIndex := len(m.lists[m.selected].Items()) + 1
-	m.lists[m.selected].InsertItem(selectedItemTargetIndex, selectedTask)
+	selectedTask.status = h.selected
+	selectedItemTargetIndex := len(h.lists[h.selected].Items()) + 1
+	h.lists[h.selected].InsertItem(selectedItemTargetIndex, selectedTask)
 }
 
-func (m *Model) MoveTaskToNext() tea.Cmd {
-	if m.selected == done {
+func (h *Home) MoveTaskToNext() tea.Cmd {
+	if h.selected == done {
 		return nil
-	} else if len(m.lists[m.selected].Items()) == 0 {
+	} else if len(h.lists[h.selected].Items()) == 0 {
 		return nil
 	}
 
-	m.changeTaskStatus(m.selected + 1)
+	h.changeTaskStatus(h.selected + 1)
 	return nil
 }
 
-func (m *Model) MoveTaskToPrev() tea.Cmd {
-	if m.selected == todo {
+func (h *Home) MoveTaskToPrev() tea.Cmd {
+	if h.selected == todo {
 		return nil
-	} else if len(m.lists[m.selected].Items()) == 0 {
+	} else if len(h.lists[h.selected].Items()) == 0 {
 		return nil
 	}
 
-	m.changeTaskStatus(m.selected - 1)
+	h.changeTaskStatus(h.selected - 1)
 	return nil
 }
