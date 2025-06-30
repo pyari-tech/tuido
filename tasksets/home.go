@@ -1,5 +1,9 @@
 package tasksets
 
+/*
+tasksets::home
+*/
+
 import (
 	"fmt"
 
@@ -21,16 +25,6 @@ var (
 			BorderForeground(lipgloss.Color("62"))
 	helpStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("241"))
-)
-
-/* Tea Model */
-type PageType int8
-
-var Pages []tea.Model
-
-const (
-	homePage PageType = iota
-	addTaskPage
 )
 
 /* Struct Home for homePage's Model */
@@ -94,12 +88,16 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "<", "l":
 			return h, h.MoveTaskToPrev()
 		case "+", "n":
-			Pages[homePage] = h
-			return Pages[addTaskPage].Update(nil)
+			pages[homePage] = h
+			return pages[taskFormPage].Update(nil)
 		case "ctrl+c", "q":
 			h.exiting = true
 			return h, tea.Quit
 		}
+	case Task:
+		tsk := msg
+		todoIndex := len(h.lists[todo].Items())
+		return h, h.lists[tsk.status].InsertItem(todoIndex, tsk)
 	}
 	var cmd tea.Cmd
 	h.lists[h.selected], cmd = h.lists[h.selected].Update(msg)
@@ -164,7 +162,7 @@ func (h *Home) changeTaskStatus(targetStatus Status) {
 		h.NextList()
 	}
 	selectedTask.status = h.selected
-	selectedItemTargetIndex := len(h.lists[h.selected].Items()) + 1
+	selectedItemTargetIndex := len(h.lists[h.selected].Items())
 	h.lists[h.selected].InsertItem(selectedItemTargetIndex, selectedTask)
 }
 
