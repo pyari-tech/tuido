@@ -87,11 +87,14 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return h, h.MoveTaskToNext()
 		case "<", "l":
 			return h, h.MoveTaskToPrev()
-		case "+", "n":
+		case "+", "n", "insert":
 			pages[homePage] = h
 			pages[taskFormPage] = NewTaskForm()
 			ctrlN := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlN, Runes: []rune{'c', 't', 'r', 'l', '+', 'n'}})
 			return pages[taskFormPage].Update(ctrlN)
+		case "-", "delete":
+			h.DeleteTask()
+			return h, nil
 		case "ctrl+c", "q":
 			h.exiting = true
 			return h, tea.Quit
@@ -150,14 +153,19 @@ func (h *Home) PrevList() {
 	}
 }
 
-func (h *Home) changeTaskStatus(targetStatus Status) {
+func (h *Home) deleteTask() Task {
 	selectedItem := h.lists[h.selected].SelectedItem()
 	selectedTask, ok := selectedItem.(Task)
 	if !ok {
-		return
+		return Task{}
 	}
 	selectedItemIndex := h.lists[h.selected].Index()
 	h.lists[selectedTask.status].RemoveItem(selectedItemIndex)
+	return selectedTask
+}
+
+func (h *Home) changeTaskStatus(targetStatus Status) {
+	selectedTask := h.deleteTask()
 	if h.selected > targetStatus {
 		h.PrevList()
 	} else {
@@ -166,6 +174,10 @@ func (h *Home) changeTaskStatus(targetStatus Status) {
 	selectedTask.status = h.selected
 	selectedItemTargetIndex := len(h.lists[h.selected].Items())
 	h.lists[h.selected].InsertItem(selectedItemTargetIndex, selectedTask)
+}
+
+func (h *Home) DeleteTask() {
+	h.deleteTask()
 }
 
 func (h *Home) MoveTaskToNext() tea.Cmd {
