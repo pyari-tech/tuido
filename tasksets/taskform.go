@@ -19,12 +19,14 @@ type TaskForm struct {
 }
 
 func NewTaskForm() *TaskForm {
-	t := &TaskForm{
+	tf := &TaskForm{
 		title:       textinput.New(),
 		description: textarea.New(),
 	}
-	t.title.Focus()
-	return t
+	tf.title.Placeholder = "to do.."
+	tf.title.PlaceholderStyle = lipgloss.NewStyle().Italic(true)
+	tf.title.Focus()
+	return tf
 }
 
 func (tf TaskForm) Init() tea.Cmd {
@@ -35,6 +37,8 @@ func (tf TaskForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "ctrl+n":
+			return tf, textinput.Blink
 		case "enter":
 			if tf.title.Focused() {
 				tf.title.Blur()
@@ -72,7 +76,7 @@ func (tf TaskForm) View() string {
 
 func (tf TaskForm) AddTaskToHome() tea.Msg {
 	return Task{
-		status:      todo,
+		status:      todo, // any fresh task goes to ToDo first
 		title:       tf.title.Value(),
 		description: tf.description.Value(),
 	}

@@ -89,7 +89,9 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return h, h.MoveTaskToPrev()
 		case "+", "n":
 			pages[homePage] = h
-			return pages[taskFormPage].Update(nil)
+			pages[taskFormPage] = NewTaskForm()
+			ctrlN := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlN, Runes: []rune{'c', 't', 'r', 'l', '+', 'n'}})
+			return pages[taskFormPage].Update(ctrlN)
 		case "ctrl+c", "q":
 			h.exiting = true
 			return h, tea.Quit
