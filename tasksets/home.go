@@ -29,15 +29,16 @@ var (
 
 /* Struct Home for homePage's Model */
 type Home struct {
-	selected Status
-	lists    []list.Model
-	loaded   bool
-	exiting  bool
-	err      error
+	selected    Status
+	lists       []list.Model
+	loaded      bool
+	exiting     bool
+	err         error
+	updateIndex int
 }
 
 func NewHome() *Home {
-	return &Home{}
+	return &Home{updateIndex: -1}
 }
 
 func initList(title string, status Status, width, height int) list.Model {
@@ -87,7 +88,7 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return h, h.MoveTaskToNext()
 		case "<", "l":
 			return h, h.MoveTaskToPrev()
-		case "+", "n", "insert":
+		case "+", "n":
 			pages[homePage] = h
 			pages[taskFormPage] = NewTaskForm()
 			ctrlN := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlN, Runes: []rune{'c', 't', 'r', 'l', '+', 'n'}})
@@ -95,14 +96,25 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "-", "delete":
 			h.DeleteTask()
 			return h, nil
+		case "insert", "u":
+			h.UpdateTask()
+			ctrlU := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlU, Runes: []rune{'c', 't', 'r', 'l', '+', 'u'}})
+			return pages[taskFormPage].Update(ctrlU)
 		case "ctrl+c", "q":
 			h.exiting = true
 			return h, tea.Quit
 		}
 	case Task:
 		tsk := msg
-		todoIndex := len(h.lists[todo].Items())
-		return h, h.lists[tsk.status].InsertItem(todoIndex, tsk)
+		tskIndex := len(h.lists[todo].Items())
+		if h.updateIndex > -1 {
+			tskIndex = h.updateIndex
+			h.lists[tsk.status].RemoveItem(tskIndex)
+
+		}
+		cmd := h.lists[tsk.status].InsertItem(tskIndex, tsk)
+		h.updateIndex = -1
+		return h, cmd
 	}
 	var cmd tea.Cmd
 	h.lists[h.selected], cmd = h.lists[h.selected].Update(msg)
@@ -153,13 +165,18 @@ func (h *Home) PrevList() {
 	}
 }
 
-func (h *Home) deleteTask() Task {
+func (h *Home) currentTask() (Task, int) {
 	selectedItem := h.lists[h.selected].SelectedItem()
 	selectedTask, ok := selectedItem.(Task)
 	if !ok {
-		return Task{}
+		return Task{}, -1
 	}
 	selectedItemIndex := h.lists[h.selected].Index()
+	return selectedTask, selectedItemIndex
+}
+
+func (h *Home) deleteTask() Task {
+	selectedTask, selectedItemIndex := h.currentTask()
 	h.lists[selectedTask.status].RemoveItem(selectedItemIndex)
 	return selectedTask
 }
@@ -200,4 +217,17 @@ func (h *Home) MoveTaskToPrev() tea.Cmd {
 
 	h.changeTaskStatus(h.selected - 1)
 	return nil
+}
+
+func (h *Home) UpdateTask() {
+	tisTask, tisIndex := h.currentTask()
+	h.updateIndex = tisIndex
+	pages[homePage] = h
+	tf := NewTaskForm()
+	tf.status = h.selected
+	tf.title.SetValue(tisTask.title)
+	tf.description.SetValue(tisTask.description)
+	tf.title.Focus()
+	tf.title.CursorStart()
+	pages[taskFormPage] = tf
 }

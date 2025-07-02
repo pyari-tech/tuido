@@ -14,18 +14,21 @@ import (
 /* Struct TaskForm for taskFormPage's Model */
 
 type TaskForm struct {
+	status      Status
 	title       textinput.Model
 	description textarea.Model
 }
 
 func NewTaskForm() *TaskForm {
 	tf := &TaskForm{
+		status:      todo, // any fresh task goes to ToDo first
 		title:       textinput.New(),
 		description: textarea.New(),
 	}
 	tf.title.Placeholder = "to do.."
 	tf.title.PlaceholderStyle = lipgloss.NewStyle().Italic(true)
 	tf.title.Focus()
+	tf.title.Cursor.Blink = true
 	return tf
 }
 
@@ -76,7 +79,7 @@ func (tf TaskForm) View() string {
 
 func (tf TaskForm) AddTaskToHome() tea.Msg {
 	return Task{
-		status:      todo, // any fresh task goes to ToDo first
+		status:      tf.status,
 		title:       tf.title.Value(),
 		description: tf.description.Value(),
 	}
