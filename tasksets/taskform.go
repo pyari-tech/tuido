@@ -13,12 +13,22 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type TaskAction uint8
+
+const (
+	noTask TaskAction = iota
+	createTask
+	updateTask
+	readTask
+)
+
 /* Struct TaskForm for taskFormPage's Model */
 
 type TaskForm struct {
 	status      Status
 	title       textinput.Model
 	description textarea.Model
+	action      TaskAction
 }
 
 func NewTaskForm() *TaskForm {
@@ -43,18 +53,32 @@ func (tf TaskForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+n":
+			tf.action = createTask
+			return tf, textinput.Blink
+		case "ctrl+u":
+			tf.action = updateTask
+			return tf, textinput.Blink
+		case "ctrl+r":
+			tf.action = readTask
+			tf.title.Blur()
 			return tf, textinput.Blink
 		case "enter":
+			if tf.action == readTask {
+				tf.action = noTask
+				return pages[homePage], nil
+			}
 			if tf.title.Focused() {
 				tf.title.Blur()
 				tf.description.Focus()
 				return tf, textarea.Blink
 			} else if tf.description.Focused() {
 				tf.description.Blur()
+				tf.action = noTask
 				pages[taskFormPage] = tf
 				return pages[homePage], tf.AddTaskToHome
 			}
 		case "ctrl+k":
+			tf.action = noTask
 			return pages[homePage], nil
 		case "ctrl+c":
 			return tf, tea.Quit
@@ -71,9 +95,20 @@ func (tf TaskForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (tf TaskForm) View() string {
+	var tfTitle string
+	switch tf.action {
+	case createTask:
+		tfTitle = "Create a new task (ctrl+k to skip)"
+	case updateTask:
+		tfTitle = "Update existing task (ctrl+k to skip)"
+	case readTask:
+		tfTitle = "Task Details (ctrl+k or ENTER for Taks Board)"
+	default:
+		tf.action = noTask
+	}
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
-		"Create a new task",
+		tfTitle,
 		tf.title.View(),
 		tf.description.View(),
 	)

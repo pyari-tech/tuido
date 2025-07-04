@@ -1,8 +1,8 @@
 tuido:
     - title: ToDo
       tasks:
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174601127+05:30"
+        - created: "2025-07-05T01:22:48.623900749+05:30"
+          updated: "2025-07-05T01:22:48.624809186+05:30"
           index: 0
           title: Add Help footbar
           description: with details for TaskBoard or TaskForm
@@ -32,12 +32,7 @@ tuido:
           title: Add reorder of Tasks in a List
           description: currently the order in a list is fixed for the order they are moved to it
     - title: W.I.P.
-      tasks:
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.17461768+05:30"
-          index: 0
-          title: Add Read Feature
-          description: load Task in ReadOnly modal
+      tasks: []
     - title: Done
       tasks:
         - created: "2025-07-04T21:28:17.829673758+05:30"
@@ -60,3 +55,8 @@ tuido:
           index: 3
           title: '[BUG] Fix Created/Updated Timestamp for Tasks'
           description: current created timestamp is garbage; updated need to update only for tweaked tasks
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T01:37:31.647821459+05:30"
+          index: 4
+          title: Add Read Feature
+          description: load Task in ReadOnly modal

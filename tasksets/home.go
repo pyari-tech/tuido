@@ -110,6 +110,10 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			h.UpdateTask()
 			ctrlU := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlU, Runes: []rune{'c', 't', 'r', 'l', '+', 'u'}})
 			return pages[taskFormPage].Update(ctrlU)
+		case "tab", "r":
+			h.UpdateTask()
+			ctrlR := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlR, Runes: []rune{'c', 't', 'r', 'l', '+', 'r'}})
+			return pages[taskFormPage].Update(ctrlR)
 		case "ctrl+c", "q":
 			h.exiting = true
 			h.Persist()

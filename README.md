@@ -17,6 +17,8 @@ Is a ToDo in a TUI.
 
 * `u` or `[INSERT]`: Update selected Task's Title or Description
 
+* `r` or `TAB`: Display Task Details; as longer text gets hidden in list
+
 * `right/left arrow key`: Move across Lists
 
 * `Ctrl + >`: Move selected Task to Next List
