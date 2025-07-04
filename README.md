@@ -21,9 +21,13 @@ Is a ToDo in a TUI.
 
 * `right/left arrow key`: Move across Lists
 
-* `Ctrl + >`: Move selected Task to Next List
+* `[` or `w`: Move selected Task UP in the same list
 
-* `Ctrl + <`: Move selected Task to Previous List
+* `<` or `a`: Move selected Task to Previous List
+
+* `]` or `s`: Move selected Task DOWN in the same list
+
+* `>` or `d`: Move selected Task to Next List
 
 **On Task/Item Form**
 

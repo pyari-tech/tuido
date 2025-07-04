@@ -94,10 +94,14 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			h.PrevList()
 		case "right", "j":
 			h.NextList()
-		case ">", "k":
-			return h, h.MoveTaskToNext()
-		case "<", "l":
+		case "[", "w":
+			return h, h.MoveTaskUp()
+		case "<", "a":
 			return h, h.MoveTaskToPrev()
+		case "]", "s":
+			return h, h.MoveTaskDown()
+		case ">", "d":
+			return h, h.MoveTaskToNext()
 		case "+", "n":
 			pages[homePage] = h
 			pages[taskFormPage] = NewTaskForm()
@@ -207,6 +211,23 @@ func (h *Home) changeTaskStatus(targetStatus Status) {
 	selectedTask.updated = time.Now()
 	selectedItemTargetIndex := len(h.lists[h.selected].Items())
 	h.lists[h.selected].InsertItem(selectedItemTargetIndex, selectedTask)
+	h.lists[h.selected].Select(selectedItemTargetIndex)
+}
+
+func (h *Home) changeTaskOrder(step int) {
+	var indexToSwitch = h.lists[h.selected].Index() + step
+	if step > 0 {
+		maxIndexAvailable := len(h.lists[h.selected].Items()) - 1
+		if indexToSwitch > maxIndexAvailable {
+			return
+		}
+	} else if indexToSwitch < 0 {
+		return
+	}
+	selectedTask := h.deleteTask()
+	selectedTask.updated = time.Now()
+	h.lists[h.selected].InsertItem(indexToSwitch, selectedTask)
+	h.lists[h.selected].Select(indexToSwitch)
 }
 
 func (h *Home) DeleteTask() {
@@ -232,6 +253,16 @@ func (h *Home) MoveTaskToPrev() tea.Cmd {
 	}
 
 	h.changeTaskStatus(h.selected - 1)
+	return nil
+}
+
+func (h *Home) MoveTaskDown() tea.Cmd {
+	h.changeTaskOrder(1)
+	return nil
+}
+
+func (h *Home) MoveTaskUp() tea.Cmd {
+	h.changeTaskOrder(-1)
 	return nil
 }
 

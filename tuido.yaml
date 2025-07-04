@@ -2,51 +2,46 @@ tuido:
     - title: ToDo
       tasks:
         - created: "2025-07-05T01:22:48.623900749+05:30"
-          updated: "2025-07-05T01:22:48.624809186+05:30"
+          updated: "2025-07-05T02:32:40.728909716+05:30"
           index: 0
           title: Add Help footbar
           description: with details for TaskBoard or TaskForm
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174603991+05:30"
+          updated: "2025-07-05T02:30:22.583754488+05:30"
           index: 1
           title: Add Styling for Lists
           description: add Color coding for items in different lists
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174606365+05:30"
-          index: 2
-          title: Add Blocked List Feature
-          description: Ability to Block Tasks. View Blocked List and Unblock any if needed.
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.17460874+05:30"
-          index: 3
-          title: Add Abandoned List
-          description: similar to Blocked Feature
-        - created: "2025-07-04T21:28:17.829673758+05:30"
           updated: "2025-07-04T22:19:22.174611115+05:30"
-          index: 4
+          index: 2
           title: Add Archived List
           description: similar to Blocked Feature
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174613908+05:30"
-          index: 5
-          title: Add reorder of Tasks in a List
-          description: currently the order in a list is fixed for the order they are moved to it
+          updated: "2025-07-05T02:29:32.056169943+05:30"
+          index: 3
+          title: Add Blocked List Feature
+          description: Ability to Block Tasks. View Blocked List and Unblock any if needed.
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T02:29:34.309347279+05:30"
+          index: 4
+          title: Add Abandoned List
+          description: similar to Blocked Feature
     - title: W.I.P.
       tasks: []
     - title: Done
       tasks:
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174637306+05:30"
+          updated: "2025-07-05T02:29:52.287799259+05:30"
           index: 0
           title: MVP Tuido
           description: following Charm.sh YT tutorial
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.17463968+05:30"
+          updated: "2025-07-05T02:30:04.445139003+05:30"
           index: 1
           title: Add Delete Function
           description: allow Delete of existing tasks
         - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174642125+05:30"
+          updated: "2025-07-05T02:30:18.223958273+05:30"
           index: 2
           title: Add Persist/Load Feature
           description: support local yaml file for now
@@ -60,3 +55,13 @@ tuido:
           index: 4
           title: Add Read Feature
           description: load Task in ReadOnly modal
+        - created: "2025-07-05T02:33:26.158860706+05:30"
+          updated: "2025-07-05T02:33:30.231389969+05:30"
+          index: 5
+          title: Add reorder of Tasks in a List
+          description: currently the order in a list is fixed for the order they are moved to it
+        - created: "2025-07-05T02:34:03.274113124+05:30"
+          updated: "2025-07-05T02:34:07.82404694+05:30"
+          index: 6
+          title: 'BUGFIX: Select newly moved Task to new List'
+          description: Currently previous selected item remains.

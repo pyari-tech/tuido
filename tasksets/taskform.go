@@ -102,7 +102,7 @@ func (tf TaskForm) View() string {
 	case updateTask:
 		tfTitle = "Update existing task (ctrl+k to skip)"
 	case readTask:
-		tfTitle = "Task Details (ctrl+k or ENTER for Taks Board)"
+		tfTitle = "Task Details (ctrl+k or ENTER for Task Board)"
 	default:
 		tf.action = noTask
 	}
