@@ -52,7 +52,7 @@ func (tf TaskForm) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				pages[taskFormPage] = tf
 				return pages[homePage], tf.AddTaskToHome
 			}
-		case "escape":
+		case "ctrl+k":
 			return pages[homePage], nil
 		case "ctrl+c":
 			return tf, tea.Quit
