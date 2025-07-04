@@ -29,6 +29,10 @@ Is a ToDo in a TUI.
 
 * `>` or `d`: Move selected Task to Next List
 
+* `[PageUp]`: Prevous Page on Paginated List
+
+* `[PageDown]`: Next Page on Paginated List
+
 **On Task/Item Form**
 
 * `[ENTER]`: When in `Title` input field, moves to `Description` field. When in `Description` field, adds/updates to Task Board.

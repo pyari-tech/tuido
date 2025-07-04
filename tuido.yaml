@@ -65,3 +65,8 @@ tuido:
           index: 6
           title: 'BUGFIX: Select newly moved Task to new List'
           description: Currently previous selected item remains.
+        - created: "2025-07-05T03:24:18.238389747+05:30"
+          updated: "2025-07-05T03:35:03.939402855+05:30"
+          index: 7
+          title: Key binding for List Pagination
+          description: Lists get paginated with too many items; add key bindings for page changes.

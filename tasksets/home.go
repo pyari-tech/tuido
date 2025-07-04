@@ -94,6 +94,11 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			h.PrevList()
 		case "right", "j":
 			h.NextList()
+		case "pageup":
+			h.lists[h.selected].PrevPage()
+		case "pagedown":
+			h.lists[h.selected].NextPage()
+			return h, nil
 		case "[", "w":
 			return h, h.MoveTaskUp()
 		case "<", "a":
