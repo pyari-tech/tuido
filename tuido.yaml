@@ -1,0 +1,62 @@
+tuido:
+    - title: ToDo
+      tasks:
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829673758+05:30"
+          index: 0
+          title: Add Help footbar
+          description: with details for TaskBoard or TaskForm
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829677041+05:30"
+          index: 1
+          title: Add Styling for Lists
+          description: add Color coding for items in different lists
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829679485+05:30"
+          index: 2
+          title: Add Blocked List Feature
+          description: Ability to Block Tasks. View Blocked List and Unblock any if needed.
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829682838+05:30"
+          index: 3
+          title: Add Abandoned List
+          description: similar to Blocked Feature
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829685701+05:30"
+          index: 4
+          title: Add Archived List
+          description: similar to Blocked Feature
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829689124+05:30"
+          index: 5
+          title: '[BUG] Fix Created Timestamp for Tasks'
+          description: current created timestamp is garbage
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829691987+05:30"
+          index: 6
+          title: Add reorder of Tasks in a List
+          description: currently the order in a list is fixed for the order they are moved to it
+    - title: W.I.P.
+      tasks:
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829698203+05:30"
+          index: 0
+          title: Add Read Feature
+          description: load Task in ReadOnly modal
+    - title: Done
+      tasks:
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829711892+05:30"
+          index: 0
+          title: MVP Tuido
+          description: following Charm.sh YT tutorial
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829715315+05:30"
+          index: 1
+          title: Add Delete Function
+          description: allow Delete of existing tasks
+        - created: "0001-01-01T00:00:00Z"
+          updated: "2025-07-04T21:28:17.829718248+05:30"
+          index: 2
+          title: Add Persist/Load Feature
+          description: support local yaml file for now
