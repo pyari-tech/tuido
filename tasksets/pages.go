@@ -6,6 +6,10 @@ tasksets::pages
 
 import tea "github.com/charmbracelet/bubbletea"
 
+var (
+	TuidoFile = ""
+)
+
 /* Tea Model */
 type pageType int8
 

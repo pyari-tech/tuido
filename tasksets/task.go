@@ -1,5 +1,7 @@
 package tasksets
 
+import "time"
+
 type Status int8
 
 const (
@@ -18,6 +20,7 @@ type Task struct {
 	status      Status
 	title       string
 	description string
+	created     time.Time
 }
 
 func (t Task) FilterValue() string {

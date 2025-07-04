@@ -5,7 +5,8 @@ tasksets::home
 */
 
 import (
-	"fmt"
+	"time"
+	"tuido/persist"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,6 +14,9 @@ import (
 )
 
 const sections = 4
+const todoListTitle = "ToDo"
+const wipListTitle = "W.I.P."
+const doneListTitle = "Done"
 
 /* STYLING */
 const padLeftRight = 3
@@ -41,27 +45,33 @@ func NewHome() *Home {
 	return &Home{updateIndex: -1}
 }
 
-func initList(title string, status Status, width, height int) list.Model {
+func initList(title string, width, height int) list.Model {
 	var lst = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
 	lst.SetShowHelp(false)
 	lst.Title = title
-	lst.SetItems([]list.Item{
-		Task{status: status, title: fmt.Sprintf("%s-1", title), description: "#1"},
-		Task{status: status, title: fmt.Sprintf("%s-2", title), description: "#2"},
-		Task{status: status, title: fmt.Sprintf("%s-3", title), description: "#3"},
-	})
 	return lst
 }
 
 func (h *Home) initLists(width, height int) {
-	var todo = initList("ToDo", todo, width, height)
-	var wip = initList("W.I.P.", wip, width, height)
-	var done = initList("Done", done, width, height)
-	h.lists = []list.Model{
-		todo,
-		wip,
-		done,
+	if isLoaded := h.Load(width, height); isLoaded {
+		return
 	}
+	var todoModel = initList(todoListTitle, width, height)
+	var wipModel = initList(wipListTitle, width, height)
+	var doneModel = initList(doneListTitle, width, height)
+	h.lists = []list.Model{
+		todoModel,
+		wipModel,
+		doneModel,
+	}
+	h.lists[0].InsertItem(
+		0,
+		Task{
+			status:      todo,
+			title:       "create your own todos",
+			description: "this is an empty board, edit/delete this, add new ones",
+		},
+	)
 	h.lists[0].SetShowStatusBar(true)
 }
 
@@ -102,6 +112,7 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return pages[taskFormPage].Update(ctrlU)
 		case "ctrl+c", "q":
 			h.exiting = true
+			h.Persist()
 			return h, tea.Quit
 		}
 	case Task:
@@ -230,4 +241,60 @@ func (h *Home) UpdateTask() {
 	tf.title.Focus()
 	tf.title.CursorStart()
 	pages[taskFormPage] = tf
+}
+
+func (h *Home) Persist() {
+	board := persist.Tuido{
+		Lists: make([]persist.TuidoList, 3),
+	}
+	for idx, lst := range h.lists {
+		items := lst.Items()
+		board.Lists[idx].Title = lst.Title
+		board.Lists[idx].Tasks = make([]persist.Task, len(items))
+		for tskIdx, item := range items {
+			if tsk, ok := item.(Task); ok {
+				board.Lists[idx].Tasks[tskIdx].Index = tskIdx
+				board.Lists[idx].Tasks[tskIdx].Title = tsk.title
+				board.Lists[idx].Tasks[tskIdx].Description = tsk.description
+				board.Lists[idx].Tasks[tskIdx].Created = persist.CustomTime{Time: tsk.created}
+				board.Lists[idx].Tasks[tskIdx].Updated = persist.CustomTime{Time: time.Now()}
+			}
+		}
+	}
+	board.Persist(TuidoFile)
+}
+
+func (h *Home) Load(width, height int) bool {
+	var savedBoard = persist.LoadTuido(TuidoFile)
+	if len(savedBoard.Lists) == 0 {
+		return false
+	}
+	h.lists = make([]list.Model, len(savedBoard.Lists))
+
+	for idx, savedList := range savedBoard.Lists {
+		var lst = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
+		lst.Title = savedList.Title
+		var listStatus Status
+		switch lst.Title {
+		case todoListTitle:
+			listStatus = todo
+		case wipListTitle:
+			listStatus = wip
+		case doneListTitle:
+			listStatus = done
+		}
+		for _, item := range savedList.Tasks {
+			tsk := Task{
+				status:      listStatus,
+				title:       item.Title,
+				description: item.Description,
+				created:     item.Created.Time,
+			}
+			lst.InsertItem(item.Index, tsk)
+		}
+		lst.SetShowHelp(false)
+		h.lists[idx] = lst
+	}
+	h.lists[0].SetShowStatusBar(true)
+	return true
 }
