@@ -5,6 +5,8 @@ tasksets::taskform
 */
 
 import (
+	"time"
+
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -82,5 +84,6 @@ func (tf TaskForm) AddTaskToHome() tea.Msg {
 		status:      tf.status,
 		title:       tf.title.Value(),
 		description: tf.description.Value(),
+		created:     time.Now(),
 	}
 }

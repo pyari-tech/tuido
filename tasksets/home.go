@@ -121,8 +121,8 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if h.updateIndex > -1 {
 			tskIndex = h.updateIndex
 			h.lists[tsk.status].RemoveItem(tskIndex)
-
 		}
+		tsk.updated = time.Now()
 		cmd := h.lists[tsk.status].InsertItem(tskIndex, tsk)
 		h.updateIndex = -1
 		return h, cmd
@@ -200,6 +200,7 @@ func (h *Home) changeTaskStatus(targetStatus Status) {
 		h.NextList()
 	}
 	selectedTask.status = h.selected
+	selectedTask.updated = time.Now()
 	selectedItemTargetIndex := len(h.lists[h.selected].Items())
 	h.lists[h.selected].InsertItem(selectedItemTargetIndex, selectedTask)
 }
@@ -257,7 +258,7 @@ func (h *Home) Persist() {
 				board.Lists[idx].Tasks[tskIdx].Title = tsk.title
 				board.Lists[idx].Tasks[tskIdx].Description = tsk.description
 				board.Lists[idx].Tasks[tskIdx].Created = persist.CustomTime{Time: tsk.created}
-				board.Lists[idx].Tasks[tskIdx].Updated = persist.CustomTime{Time: time.Now()}
+				board.Lists[idx].Tasks[tskIdx].Updated = persist.CustomTime{Time: tsk.updated}
 			}
 		}
 	}
@@ -289,6 +290,7 @@ func (h *Home) Load(width, height int) bool {
 				title:       item.Title,
 				description: item.Description,
 				created:     item.Created.Time,
+				updated:     item.Updated.Time,
 			}
 			lst.InsertItem(item.Index, tsk)
 		}

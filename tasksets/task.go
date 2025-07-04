@@ -21,6 +21,7 @@ type Task struct {
 	title       string
 	description string
 	created     time.Time
+	updated     time.Time
 }
 
 func (t Task) FilterValue() string {
