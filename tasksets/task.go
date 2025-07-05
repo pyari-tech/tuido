@@ -13,6 +13,8 @@ const (
 	archive
 )
 
+const totalStatus = 6
+
 /*
 Task would implement `list` with Title, Description, FilterValue
 */

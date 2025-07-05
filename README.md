@@ -33,6 +33,15 @@ Is a ToDo in a TUI.
 
 * `[PageDown]`: Next Page on Paginated List
 
+* `Ctrl + t` to show Blocked List instead of Done
+
+* `Ctrl + y` to show Abandon List instead of Done
+
+* `Ctrl + r` to show Archive List instead of Done
+
+* `Ctrl + e` to show Done List as last List
+
+
 **On Task/Item Form**
 
 * `[ENTER]`: When in `Title` input field, moves to `Description` field. When in `Description` field, adds/updates to Task Board.

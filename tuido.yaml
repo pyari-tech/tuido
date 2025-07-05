@@ -1,33 +1,18 @@
 tuido:
     - title: ToDo
       tasks:
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T02:30:22.583754488+05:30"
+          index: 0
+          title: Add Styling for Lists
+          description: add Color coding for items in different lists
+    - title: W.I.P.
+      tasks:
         - created: "2025-07-05T01:22:48.623900749+05:30"
-          updated: "2025-07-05T02:32:40.728909716+05:30"
+          updated: "2025-07-05T21:21:54.659585677+05:30"
           index: 0
           title: Add Help footbar
           description: with details for TaskBoard or TaskForm
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-05T02:30:22.583754488+05:30"
-          index: 1
-          title: Add Styling for Lists
-          description: add Color coding for items in different lists
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-04T22:19:22.174611115+05:30"
-          index: 2
-          title: Add Archived List
-          description: similar to Blocked Feature
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-05T02:29:32.056169943+05:30"
-          index: 3
-          title: Add Blocked List Feature
-          description: Ability to Block Tasks. View Blocked List and Unblock any if needed.
-        - created: "2025-07-04T21:28:17.829673758+05:30"
-          updated: "2025-07-05T02:29:34.309347279+05:30"
-          index: 4
-          title: Add Abandoned List
-          description: similar to Blocked Feature
-    - title: W.I.P.
-      tasks: []
     - title: Done
       tasks:
         - created: "2025-07-04T21:28:17.829673758+05:30"
@@ -70,3 +55,24 @@ tuido:
           index: 7
           title: Key binding for List Pagination
           description: Lists get paginated with too many items; add key bindings for page changes.
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T21:21:46.242896425+05:30"
+          index: 8
+          title: Add Archived List
+          description: similar to Blocked Feature
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T21:21:48.249892559+05:30"
+          index: 9
+          title: Add Blocked List Feature
+          description: Ability to Block Tasks. View Blocked List and Unblock any if needed.
+        - created: "2025-07-04T21:28:17.829673758+05:30"
+          updated: "2025-07-05T21:21:49.4156825+05:30"
+          index: 10
+          title: Add Abandoned List
+          description: similar to Blocked Feature
+    - title: Blocked
+      tasks: []
+    - title: Abandon
+      tasks: []
+    - title: Archive
+      tasks: []

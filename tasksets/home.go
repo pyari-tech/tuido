@@ -14,9 +14,15 @@ import (
 )
 
 const sections = 4
-const todoListTitle = "ToDo"
-const wipListTitle = "W.I.P."
-const doneListTitle = "Done"
+
+var listTitles = map[Status]string{
+	todo:    "ToDo",
+	wip:     "W.I.P.",
+	done:    "Done",
+	blocked: "Blocked",
+	abandon: "Abandon",
+	archive: "Archive",
+}
 
 /* STYLING */
 const padLeftRight = 3
@@ -39,10 +45,11 @@ type Home struct {
 	exiting     bool
 	err         error
 	updateIndex int
+	lastColumn  Status
 }
 
 func NewHome() *Home {
-	return &Home{updateIndex: -1}
+	return &Home{updateIndex: -1, lastColumn: done}
 }
 
 func initList(title string, width, height int) list.Model {
@@ -53,16 +60,22 @@ func initList(title string, width, height int) list.Model {
 }
 
 func (h *Home) initLists(width, height int) {
-	if isLoaded := h.Load(width, height); isLoaded {
-		return
-	}
-	var todoModel = initList(todoListTitle, width, height)
-	var wipModel = initList(wipListTitle, width, height)
-	var doneModel = initList(doneListTitle, width, height)
+	var todoModel = initList(listTitles[todo], width, height)
+	var wipModel = initList(listTitles[wip], width, height)
+	var doneModel = initList(listTitles[done], width, height)
+	var blockedModel = initList(listTitles[blocked], width, height)
+	var abandonModel = initList(listTitles[abandon], width, height)
+	var archiveModel = initList(listTitles[archive], width, height)
 	h.lists = []list.Model{
 		todoModel,
 		wipModel,
 		doneModel,
+		blockedModel,
+		abandonModel,
+		archiveModel,
+	}
+	if isLoaded := h.Load(width, height); isLoaded {
+		return
 	}
 	h.lists[0].InsertItem(
 		0,
@@ -123,6 +136,18 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			h.UpdateTask()
 			ctrlR := tea.KeyMsg(tea.Key{Type: tea.KeyCtrlR, Runes: []rune{'c', 't', 'r', 'l', '+', 'r'}})
 			return pages[taskFormPage].Update(ctrlR)
+		case "ctrl+e":
+			h.lastColumn = done
+			return h, nil
+		case "ctrl+r":
+			h.lastColumn = archive
+			return h, nil
+		case "ctrl+t":
+			h.lastColumn = blocked
+			return h, nil
+		case "ctrl+y":
+			h.lastColumn = abandon
+			return h, nil
 		case "ctrl+c", "q":
 			h.exiting = true
 			h.Persist()
@@ -163,27 +188,42 @@ func (h Home) View() string {
 	var (
 		todoView = h.columnView(todo)
 		wipView  = h.columnView(wip)
-		doneView = h.columnView(done)
+		lastView string
 	)
+
+	if h.lastColumn == blocked {
+		lastView = h.columnView(blocked)
+	} else if h.lastColumn == abandon {
+		lastView = h.columnView(abandon)
+	} else if h.lastColumn == archive {
+		lastView = h.columnView(archive)
+	} else {
+		lastView = h.columnView(done)
+	}
 	return lipgloss.JoinHorizontal(
 		lipgloss.Left,
 		todoView,
 		wipView,
-		doneView,
+		lastView,
 	)
 }
 
 func (h *Home) NextList() {
-	if h.selected == done {
+	targetStatus := h.selected + 1
+	if h.selected == h.lastColumn {
 		h.selected = todo
+	} else if targetStatus < done {
+		h.selected = targetStatus
 	} else {
-		h.selected++
+		h.selected = h.lastColumn
 	}
 }
 
 func (h *Home) PrevList() {
 	if h.selected == todo {
-		h.selected = done
+		h.selected = h.lastColumn
+	} else if h.selected == h.lastColumn {
+		h.selected = wip
 	} else {
 		h.selected--
 	}
@@ -240,13 +280,18 @@ func (h *Home) DeleteTask() {
 }
 
 func (h *Home) MoveTaskToNext() tea.Cmd {
-	if h.selected == done {
+	if h.selected == h.lastColumn {
 		return nil
 	} else if len(h.lists[h.selected].Items()) == 0 {
 		return nil
 	}
 
-	h.changeTaskStatus(h.selected + 1)
+	targetStatus := h.selected + 1
+	if targetStatus < done {
+		h.changeTaskStatus(targetStatus)
+	} else {
+		h.changeTaskStatus(h.lastColumn)
+	}
 	return nil
 }
 
@@ -286,7 +331,7 @@ func (h *Home) UpdateTask() {
 
 func (h *Home) Persist() {
 	board := persist.Tuido{
-		Lists: make([]persist.TuidoList, 3),
+		Lists: make([]persist.TuidoList, totalStatus),
 	}
 	for idx, lst := range h.lists {
 		items := lst.Items()
@@ -310,19 +355,24 @@ func (h *Home) Load(width, height int) bool {
 	if len(savedBoard.Lists) == 0 {
 		return false
 	}
-	h.lists = make([]list.Model, len(savedBoard.Lists))
 
 	for idx, savedList := range savedBoard.Lists {
 		var lst = list.New([]list.Item{}, list.NewDefaultDelegate(), width, height)
 		lst.Title = savedList.Title
 		var listStatus Status
 		switch lst.Title {
-		case todoListTitle:
+		case listTitles[todo]:
 			listStatus = todo
-		case wipListTitle:
+		case listTitles[wip]:
 			listStatus = wip
-		case doneListTitle:
+		case listTitles[done]:
 			listStatus = done
+		case listTitles[blocked]:
+			listStatus = blocked
+		case listTitles[abandon]:
+			listStatus = abandon
+		case listTitles[archive]:
+			listStatus = archive
 		}
 		for _, item := range savedList.Tasks {
 			tsk := Task{
