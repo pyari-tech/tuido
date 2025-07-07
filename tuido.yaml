@@ -6,6 +6,16 @@ tuido:
           index: 0
           title: Add Styling for Lists
           description: add Color coding for items in different lists
+        - created: "2025-07-07T13:03:40.002691675+05:30"
+          updated: "2025-07-07T13:03:40.004365373+05:30"
+          index: 1
+          title: Add DELETED list
+          description: Have a Deleted list, which gets all tasks deleted in that turn.. to allow Undo before quit. This gets purged on Quit.
+        - created: "2025-07-07T13:04:53.352547624+05:30"
+          updated: "2025-07-07T13:04:53.353990284+05:30"
+          index: 2
+          title: Show Status with list.NewStatusMessage
+          description: For Task actions taken, show status message once completed.
     - title: W.I.P.
       tasks:
         - created: "2025-07-07T11:55:26.952173866+05:30"

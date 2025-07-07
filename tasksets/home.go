@@ -30,10 +30,12 @@ const padLeftRight = 3
 const padTopBottom = 1
 
 var (
-	columnStyle   = lipgloss.NewStyle().Padding(padTopBottom, padLeftRight)
+	columnStyle = lipgloss.NewStyle().Padding(padTopBottom, padLeftRight)
+
 	selectedStyle = lipgloss.NewStyle().Padding(padTopBottom, padLeftRight).
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("62"))
+
 	helpStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("241"))
 )
