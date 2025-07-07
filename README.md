@@ -55,3 +55,7 @@ Is a ToDo in a TUI.
 > Loads/Saves state from/to `tuido.yaml` by default. Can pick custom filepath with `-file <yaml-filepath>` flag.
 
 ---
+
+* License: [GPLv3](./LICENSE)
+
+---
