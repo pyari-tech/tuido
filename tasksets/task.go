@@ -37,3 +37,11 @@ func (t Task) Title() string {
 func (t Task) Description() string {
 	return t.description
 }
+
+func InitTask() Task {
+	return Task{
+		status:      todo,
+		title:       "create your own todos",
+		description: "this is an empty board, edit/delete this, add new ones",
+	}
+}

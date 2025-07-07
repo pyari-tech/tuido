@@ -9,7 +9,11 @@ Is a ToDo in a TUI.
 
 ### HowTo Use
 
+> Pressing `?` on ToDo list, shows Full Help for Actions' key bindings.
+
 **On Task Board**
+
+* Arrow Keys for moving selection; OR `h/j/k/l` for Left/Up/Down/Right
 
 * `+` or `n`: Add new task to **ToDo** list
 

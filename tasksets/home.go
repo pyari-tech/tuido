@@ -8,6 +8,7 @@ import (
 	"time"
 	"tuido/persist"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -74,18 +75,31 @@ func (h *Home) initLists(width, height int) {
 		abandonModel,
 		archiveModel,
 	}
-	if isLoaded := h.Load(width, height); isLoaded {
-		return
+	if isLoaded := h.Load(width, height); !isLoaded {
+		h.lists[0].InsertItem(0, InitTask())
 	}
-	h.lists[0].InsertItem(
-		0,
-		Task{
-			status:      todo,
-			title:       "create your own todos",
-			description: "this is an empty board, edit/delete this, add new ones",
-		},
-	)
 	h.lists[0].SetShowStatusBar(true)
+	h.lists[0].SetShowHelp(true)
+	h.lists[0].AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.selectListOnLeft,
+			listKeys.selectListOnRight,
+			listKeys.nextListPage,
+			listKeys.prevListPage,
+			listKeys.moveTaskUp,
+			listKeys.moveTaskToNextList,
+			listKeys.moveTaskDown,
+			listKeys.moveTaskToPrevList,
+			listKeys.createTask,
+			listKeys.readTask,
+			listKeys.updateTask,
+			listKeys.deleteTask,
+			listKeys.showDoneLast,
+			listKeys.showBlockedLast,
+			listKeys.showAbandonLast,
+			listKeys.showArchiveLast,
+		}
+	}
 }
 
 func (h Home) Init() tea.Cmd {
@@ -105,7 +119,7 @@ func (h Home) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "left", "h":
 			h.PrevList()
-		case "right", "j":
+		case "right", "l":
 			h.NextList()
 		case "pageup":
 			h.lists[h.selected].PrevPage()
@@ -387,6 +401,5 @@ func (h *Home) Load(width, height int) bool {
 		lst.SetShowHelp(false)
 		h.lists[idx] = lst
 	}
-	h.lists[0].SetShowStatusBar(true)
 	return true
 }

@@ -8,11 +8,11 @@ tuido:
           description: add Color coding for items in different lists
     - title: W.I.P.
       tasks:
-        - created: "2025-07-05T01:22:48.623900749+05:30"
-          updated: "2025-07-05T21:21:54.659585677+05:30"
+        - created: "2025-07-07T11:55:26.952173866+05:30"
+          updated: "2025-07-07T11:56:52.385395061+05:30"
           index: 0
-          title: Add Help footbar
-          description: with details for TaskBoard or TaskForm
+          title: Update TaskBoard's Update flow to use key.Binding
+          description: Update is using simple string match. Now that we have key.Binding available for all actions, use them with key.Match
     - title: Done
       tasks:
         - created: "2025-07-04T21:28:17.829673758+05:30"
@@ -70,6 +70,11 @@ tuido:
           index: 10
           title: Add Abandoned List
           description: similar to Blocked Feature
+        - created: "2025-07-05T01:22:48.623900749+05:30"
+          updated: "2025-07-07T11:56:45.253126626+05:30"
+          index: 11
+          title: Add Help footbar
+          description: with details for TaskBoard or TaskForm
     - title: Blocked
       tasks: []
     - title: Abandon
